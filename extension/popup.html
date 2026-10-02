@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhishShield</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0A0E14;--card:#111821;--border:rgba(255,255,255,0.08);--text:#E6EDF3;--muted:#8B949E;--green:#00E676;--yellow:#FFAB00;--red:#FF3B30}
+body{width:380px;font-family:'Space Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:0}
+.header{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:#0D121C}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.logo-icon{width:26px;height:26px;display:grid;place-items:center;background:var(--text);color:var(--bg);border-radius:6px;font-size:12px}
+.badge{font-size:9px;padding:3px 6px;border-radius:20px;background:rgba(0,230,118,0.12);border:1px solid rgba(0,230,118,0.2);color:var(--green);font-weight:700}
+.current-url{padding:10px 16px;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);font-family:monospace;font-size:11px;color:var(--muted);word-break:break-all}
+.input-row{padding:12px 16px;display:flex;gap:8px}
+.input-row input{flex:1;background:#0D121C;border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-family:monospace;font-size:11px;outline:none}
+.input-row input:focus{border-color:rgba(41,121,255,0.5)}
+.btn{background:var(--text);color:var(--bg);border:none;border-radius:8px;padding:8px 14px;font-weight:700;font-size:12px;cursor:pointer}
+.btn:active{transform:scale(0.98)}
+.gauge-card{margin:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:center}
+.gauge{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:20px;border:4px solid var(--green);color:var(--green);flex-shrink:0}
+.gauge.high{border-color:var(--red);color:var(--red);background:rgba(255,59,48,0.08)}
+.gauge.med{border-color:var(--yellow);color:var(--yellow);background:rgba(255,171,0,0.08)}
+.gauge.low{border-color:var(--green);color:var(--green);background:rgba(0,230,118,0.08)}
+.score-info{flex:1}
+.score-info strong{font-size:13px;display:block}
+.score-info span{font-size:11px;color:var(--muted);line-height:1.4}
+.reasons{margin:0 16px 12px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.reasons-title{font-size:11px;font-weight:700;margin-bottom:8px;display:flex;justify-content:space-between}
+.reasons-title span{font-family:monospace;font-size:10px;color:var(--muted);background:rgba(255,255,255,0.06);padding:2px 6px;border-radius:20px}
+.reasons ul{list-style:none;display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto}
+.reasons li{font-size:11px;padding:7px 8px;border-radius:8px;display:flex;gap:8px;align-items:flex-start;line-height:1.4}
+.reasons li.triggered{background:rgba(255,59,48,0.06);border:1px solid rgba(255,59,48,0.12);color:#FFBABA}
+.reasons li.safe{background:rgba(0,230,118,0.06);border:1px solid rgba(0,230,118,0.12);color:#B9F6CA}
+.dot{width:14px;height:14px;border-radius:50%;display:grid;place-items:center;font-size:8px;flex-shrink:0}
+.triggered .dot{background:var(--red);color:white}
+.safe .dot{background:var(--green);color:#0A0E14}
+.footer{padding:10px 16px;text-align:center;font-size:9px;color:var(--muted);font-family:monospace;border-top:1px solid var(--border)}
+.link{color:#82B1FF;text-decoration:none;font-size:11px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo"><span class="logo-icon">◈</span> PhishShield <span style="font-weight:400;color:var(--muted);font-size:10px">v2.1</span></div>
+  <span class="badge" id="riskBadge">LOW RISK</span>
+</div>
+<div class="current-url" id="currentUrl">Detecting current tab…</div>
+<div class="input-row">
+  <input id="urlInput" placeholder="https://example.com/login" spellcheck="false">
+  <button class="btn" id="analyzeBtn">Scan</button>
+</div>
+<div class="gauge-card">
+  <div class="gauge low" id="gauge">0</div>
+  <div class="score-info">
+    <strong id="scoreText">0 / 100 — Awaiting scan</strong>
+    <span id="descText">Paste a URL or scan current tab. All checks run locally.</span>
+  </div>
+</div>
+<div class="reasons">
+  <div class="reasons-title">Signals <span id="signalCount">0/15</span></div>
+  <ul id="reasonsList"><li class="safe"><span class="dot">✓</span> Ready to analyze — 15 heuristics + ML</li></ul>
+</div>
+<div class="footer">
+  <a class="link" href="#" id="fullReport">Open full analyzer →</a> &nbsp;•&nbsp; 100% local • no data sent
+</div>
+<script src="popup.js"></script>
+</body>
+</html>

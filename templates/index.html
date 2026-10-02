@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhishShield — URL Threat Analyzer</title>
+<meta name="description" content="PhishShield analyzes URLs for phishing threats in real-time using 15+ heuristic engines, ML classification, WHOIS, DNS, and Java-powered domain analysis.">
+<link rel="stylesheet" href="/static/style.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow glow-1"></div>
+<div class="bg-glow glow-2"></div>
+
+<!-- ── Navigation ─────────────────────────────────────────────────────────── -->
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-icon">◈</div>
+      <span>PhishShield</span>
+      <span class="badge">v2.1</span>
+    </div>
+    <div class="nav-links">
+      <span class="nav-link active" id="navAnalyzer" onclick="switchTab('analyzer')">Analyzer</span>
+      <span class="nav-link" id="navHistory" onclick="switchTab('history')">History</span>
+      <span class="nav-link" onclick="document.getElementById('extension-preview').scrollIntoView({behavior:'smooth'})">Extension</span>
+      <span class="nav-link" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">How it works</span>
+    </div>
+    <div class="nav-right">
+      <span class="shield-status" id="shieldStatus"><span class="dot"></span> Connecting…</span>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ════════════════════════════════════════════════════════════════════════ -->
+  <!-- TAB: Analyzer                                                           -->
+  <!-- ════════════════════════════════════════════════════════════════════════ -->
+  <div id="tabAnalyzer">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-tag"><span class="pulse"></span> REAL-TIME PHISHING DETECTION &nbsp;•&nbsp; 7 HEURISTIC ENGINES &nbsp;•&nbsp; JAVA + ML</div>
+      <h1>Don't get <span class="gradient">hooked.</span></h1>
+      <p>Paste any URL. PhishShield dissects 15+ threat signals — WHOIS, DNS, ML classifier, and Java-powered entropy analysis.</p>
+    </div>
+
+    <!-- Stats row (from DB) -->
+    <div id="statsRow" class="stats-row hidden">
+      <div class="stat-card">
+        <div class="stat-value" id="statTotal">—</div>
+        <div class="stat-label">Total Scans</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statAvg">—</div>
+        <div class="stat-label">Avg Risk Score</div>
+      </div>
+      <div class="stat-card stat-danger">
+        <div class="stat-value" id="statHigh">—</div>
+        <div class="stat-label">High Risk</div>
+      </div>
+      <div class="stat-card stat-warn">
+        <div class="stat-value" id="statMedium">—</div>
+        <div class="stat-label">Medium Risk</div>
+      </div>
+      <div class="stat-card stat-safe">
+        <div class="stat-value" id="statLow">—</div>
+        <div class="stat-label">Low Risk</div>
+      </div>
+    </div>
+
+    <!-- Analyzer Card -->
+    <div class="analyzer-card">
+      <div class="card-header">
+        <div class="card-title"><span class="icon">🔍</span> URL Analyzer</div>
+        <div class="card-subtitle">Enter a suspicious link to evaluate risk — powered by Flask + Java + MySQL</div>
+      </div>
+
+      <div class="input-row">
+        <div class="input-wrap">
+          <span class="input-icon">🔗</span>
+          <input id="urlInput" type="text" placeholder="https://example.com/login" spellcheck="false" autocomplete="off">
+          <button id="clearBtn" class="clear-btn" title="Clear">✕</button>
+        </div>
+        <button id="analyzeBtn" class="analyze-btn">
+          <span>Analyze</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+
+      <div class="quick-tests">
+        <span>Try:</span>
+        <button class="chip" data-url="https://google.com">google.com</button>
+        <button class="chip" data-url="http://paypal-secure-login.tk/verify/account?session=abc">paypal-secure-login.tk</button>
+        <button class="chip" data-url="http://192.168.1.23/login">192.168.1.23/login</button>
+        <button class="chip" data-url="https://xn--pple-43d.com/login">xn--pple-43d.com</button>
+        <button class="chip" data-url="https://bit.ly/3xAmz12">bit.ly link</button>
+        <button class="chip" data-url="https://amazon.com-signin.suspicious-site.ga/auth">amazon typosquat</button>
+      </div>
+
+      <!-- Results -->
+      <div id="result" class="result hidden">
+        <div class="result-grid">
+          <!-- Score Gauge -->
+          <div class="gauge-card">
+            <div class="gauge-wrap">
+              <svg width="160" height="160" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12"/>
+                <circle id="gaugeProgress" cx="80" cy="80" r="70" fill="none" stroke="#00E676" stroke-width="12"
+                  stroke-linecap="round" stroke-dasharray="439.82" stroke-dashoffset="439.82" transform="rotate(-90 80 80)"/>
+              </svg>
+              <div class="gauge-center">
+                <div id="scoreValue" class="gauge-score">0</div>
+                <div class="gauge-label">/ 100</div>
+                <div id="riskLabel" class="gauge-risk">LOW RISK</div>
+              </div>
+            </div>
+            <div id="riskDesc" class="risk-desc">No significant threats detected.</div>
+            <div class="meta-row">
+              <span id="metaDomain">—</span>
+              <span id="metaTime">—</span>
+            </div>
+            <!-- Java badge -->
+            <div id="javaBadge" class="java-badge hidden">
+              <span class="java-icon">☕</span>
+              <span id="javaRisk">Java: —</span>
+            </div>
+            <!-- DB save badge -->
+            <div id="dbBadge" class="db-badge hidden">🗄️ Saved to MySQL</div>
+          </div>
+
+          <!-- Signals -->
+          <div class="reasons-card">
+            <div class="reasons-title">Detection Signals <span id="signalCount">0/15</span></div>
+            <ul id="reasonsList" class="reasons-list"></ul>
+          </div>
+        </div>
+
+        <!-- Breakdown -->
+        <div class="breakdown">
+          <div class="breakdown-title">Heuristic Breakdown</div>
+          <div id="breakdownGrid" class="breakdown-grid"></div>
+        </div>
+
+        <!-- Java Details panel -->
+        <div id="javaPanel" class="java-panel hidden">
+          <div class="java-panel-header">
+            <span class="java-panel-icon">☕</span>
+            <strong>Java Feature Analysis</strong>
+            <span id="javaPanelRisk" class="java-risk-badge"></span>
+          </div>
+          <div id="javaDetails" class="java-details-grid"></div>
+        </div>
+
+        <div class="action-row">
+          <div id="verdictBox" class="verdict safe">✓ This URL appears safe. Still verify the sender before entering credentials.</div>
+          <button id="copyBtn" class="secondary-btn">Copy Report</button>
+        </div>
+      </div>
+
+      <div id="emptyResult" class="empty-result">
+        <div class="empty-icon">🛡️</div>
+        <p>Awaiting URL analysis — results will appear here with risk score and detailed reasoning.</p>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <section id="how-it-works" class="features">
+      <div class="feature">
+        <div class="f-icon" style="background:#00E67622;color:#00E676">◉</div>
+        <h3>15+ Signals</h3>
+        <p>Domain age (WHOIS), typosquat detection, IP hosts, punycode, URL shorteners & more.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon" style="background:#FF3B3022;color:#FF3B30">☕</div>
+        <h3>Java Analysis</h3>
+        <p>Java CLI computes Shannon entropy, digit ratio, n-gram phishing patterns & homoglyph detection.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon" style="background:#2979FF22;color:#2979FF">⬢</div>
+        <h3>ML Classifier</h3>
+        <p>Scikit-learn model blended 70/30 with heuristics. Every decision is fully explainable.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon" style="background:#9C27B022;color:#CE93D8">🗄️</div>
+        <h3>MySQL Logging</h3>
+        <p>Every scan is persisted to MySQL — browse history, track threats, see aggregate statistics.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon" style="background:#00BCD422;color:#4DD0E1">🐍</div>
+        <h3>Flask Backend</h3>
+        <p>Python Flask serves the UI & REST API. CORS-enabled. Integrates Java, ML, WHOIS & DNS.</p>
+      </div>
+      <div class="feature">
+        <div class="f-icon" style="background:#FFAB0022;color:#FFAB00">⚡</div>
+        <h3>Explainable</h3>
+        <p>Every risk point is annotated — learn to spot phishing yourself with detailed signal cards.</p>
+      </div>
+    </section>
+
+    <!-- Extension Preview -->
+    <section id="extension-preview" class="extension-section">
+      <div class="ext-header">
+        <h2>Browser Extension Preview</h2>
+        <p>PhishShield ships as a Manifest V3 extension. Same engine, same score — backed by Flask now.</p>
+      </div>
+      <div class="ext-demo">
+        <div class="browser-mock">
+          <div class="browser-bar">
+            <div class="traffic"><span></span><span></span><span></span></div>
+            <div class="address-bar">🔒 https://paypal-secure-login.tk/verify <span class="ext-icon">◈</span></div>
+          </div>
+          <div class="browser-body">
+            <div class="ext-popup">
+              <div class="ext-popup-header">
+                <span class="ext-logo">◈ PhishShield</span>
+                <span class="ext-badge high">HIGH RISK</span>
+              </div>
+              <div class="ext-score-row">
+                <div class="ext-gauge">87</div>
+                <div class="ext-score-info">
+                  <strong>87 / 100 — Blocked</strong>
+                  <span>5 signals triggered</span>
+                </div>
+              </div>
+              <ul class="ext-list">
+                <li>✓ Suspicious TLD (.tk)</li>
+                <li>✓ Login keyword in path</li>
+                <li>✓ Typosquat (paypal)</li>
+                <li>✓ HTTP not HTTPS</li>
+              </ul>
+              <button class="ext-btn">View Full Report</button>
+              <div class="ext-footer">Protected by PhishShield • Flask + MySQL</div>
+            </div>
+            <div class="browser-warning">
+              <strong>⚠️ Deceptive site ahead</strong>
+              <p>PhishShield flagged this page. Do not enter credentials.</p>
+            </div>
+          </div>
+        </div>
+        <div class="ext-code">
+          <div class="code-header">manifest.json <span>Manifest V3</span></div>
+<pre><code>{
+  "manifest_version": 3,
+  "name": "PhishShield",
+  "version": "2.1",
+  "description": "Real-time phishing URL analyzer",
+  "action": { "default_popup": "popup.html" },
+  "permissions": ["activeTab"],
+  "icons": { "128": "icon128.png" }
+}</code></pre>
+          <a class="download-btn" href="#" onclick="alert('Extension: copy popup logic + manifest. Backend now runs on Flask at port 5000.');return false;">⤓ How to install</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>PhishShield — Flask + MySQL + Java + ML. All heuristics run server-side.</span>
+      <span class="mono">© 2026 PhishShield Labs</span>
+    </footer>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════════ -->
+  <!-- TAB: History                                                             -->
+  <!-- ════════════════════════════════════════════════════════════════════════ -->
+  <div id="tabHistory" class="hidden">
+    <div class="hero" style="padding-bottom:12px">
+      <div class="hero-tag"><span class="pulse"></span> MYSQL SCAN HISTORY</div>
+      <h1>Scan <span class="gradient">History</span></h1>
+      <p>All URL analyses are persisted to MySQL. Browse your scan log below.</p>
+    </div>
+
+    <div class="history-toolbar">
+      <button class="secondary-btn" id="refreshHistoryBtn" onclick="loadHistory()">⟳ Refresh</button>
+      <div id="historyDbStatus" class="history-db-status"></div>
+    </div>
+
+    <div id="historyEmpty" class="empty-result hidden">
+      <div class="empty-icon">🗄️</div>
+      <p>No scans recorded yet — or MySQL is unavailable. Run an analysis first.</p>
+    </div>
+
+    <div id="historyTable" class="history-table-wrap hidden">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Hostname</th>
+            <th>Score</th>
+            <th>Level</th>
+            <th>ML Score</th>
+            <th>Java Entropy</th>
+            <th>Analyzed At</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+
+    <div id="historyLoading" class="history-loading">
+      <div class="spinner"></div>
+      <span>Loading from MySQL…</span>
+    </div>
+  </div>
+
+</main>
+
+<script src="/static/script.js"></script>
+</body>
+</html>

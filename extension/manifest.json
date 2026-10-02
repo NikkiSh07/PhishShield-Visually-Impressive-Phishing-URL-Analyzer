@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "PhishShield",
+  "version": "2.1",
+  "description": "Real-time phishing URL analyzer — 15 heuristics + ML ensemble, 100% local",
+  "action": {
+    "default_title": "PhishShield",
+    "default_popup": "popup.html"
+  },
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

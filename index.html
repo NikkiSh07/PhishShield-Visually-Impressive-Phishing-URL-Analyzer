@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhishShield — URL Threat Analyzer</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow glow-1"></div>
+<div class="bg-glow glow-2"></div>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-icon">◈</div>
+      <span>PhishShield</span>
+      <span class="badge">v2.1</span>
+    </div>
+    <div class="nav-links">
+      <span class="nav-link active">Analyzer</span>
+      <span class="nav-link" onclick="document.getElementById('extension-preview').scrollIntoView({behavior:'smooth'})">Extension</span>
+      <span class="nav-link" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">How it works</span>
+    </div>
+    <div class="nav-cta">
+      <span class="shield-status"><span class="dot"></span> Protection Active</span>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-tag"><span class="pulse"></span> REAL-TIME PHISHING DETECTION &nbsp;•&nbsp; 7 HEURISTIC ENGINES</div>
+    <h1>Don't get <span class="gradient">hooked.</span></h1>
+    <p>Paste any URL. PhishShield dissects 15+ threat signals in milliseconds — no data leaves your device.</p>
+  </div>
+
+  <!-- Analyzer Card -->
+  <div class="analyzer-card">
+    <div class="card-header">
+      <div class="card-title"><span class="icon">🔍</span> URL Analyzer</div>
+      <div class="card-subtitle">Enter a suspicious link to evaluate risk</div>
+    </div>
+
+    <div class="input-row">
+      <div class="input-wrap">
+        <span class="input-icon">🔗</span>
+        <input id="urlInput" type="text" placeholder="https://example.com/login" spellcheck="false" autocomplete="off">
+        <button id="clearBtn" class="clear-btn" title="Clear">✕</button>
+      </div>
+      <button id="analyzeBtn" class="analyze-btn">
+        <span>Analyze</span>
+        <span class="btn-arrow">→</span>
+      </button>
+    </div>
+
+    <div class="quick-tests">
+      <span>Try:</span>
+      <button class="chip" data-url="https://google.com">google.com</button>
+      <button class="chip" data-url="http://paypal-secure-login.tk/verify/account?session=abc">paypal-secure-login.tk</button>
+      <button class="chip" data-url="http://192.168.1.23/login">192.168.1.23/login</button>
+      <button class="chip" data-url="https://xn--pple-43d.com/login">xn--pple-43d.com</button>
+      <button class="chip" data-url="https://bit.ly/3xAmz12">bit.ly link</button>
+      <button class="chip" data-url="https://amazon.com-signin.suspicious-site.ga/auth">amazon typosquat</button>
+    </div>
+
+    <!-- Results -->
+    <div id="result" class="result hidden">
+      <div class="result-grid">
+        <!-- Score Gauge -->
+        <div class="gauge-card">
+          <div class="gauge-wrap">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12"/>
+              <circle id="gaugeProgress" cx="80" cy="80" r="70" fill="none" stroke="#00E676" stroke-width="12" stroke-linecap="round"
+                stroke-dasharray="439.82" stroke-dashoffset="439.82" transform="rotate(-90 80 80)"/>
+            </svg>
+            <div class="gauge-center">
+              <div id="scoreValue" class="gauge-score">0</div>
+              <div class="gauge-label">/ 100</div>
+              <div id="riskLabel" class="gauge-risk">LOW RISK</div>
+            </div>
+          </div>
+          <div id="riskDesc" class="risk-desc">No significant threats detected.</div>
+          <div class="meta-row">
+            <span id="metaDomain">—</span>
+            <span id="metaTime">—</span>
+          </div>
+        </div>
+
+        <!-- Reasons -->
+        <div class="reasons-card">
+          <div class="reasons-title">Detection Signals <span id="signalCount">0/15</span></div>
+          <ul id="reasonsList" class="reasons-list"></ul>
+        </div>
+      </div>
+
+      <!-- Breakdown -->
+      <div class="breakdown">
+        <div class="breakdown-title">Heuristic Breakdown</div>
+        <div id="breakdownGrid" class="breakdown-grid"></div>
+      </div>
+
+      <div class="action-row">
+        <div id="verdictBox" class="verdict safe">✓ This URL appears safe. Still verify the sender before entering credentials.</div>
+        <button id="copyBtn" class="secondary-btn">Copy Report</button>
+      </div>
+    </div>
+
+    <div id="emptyResult" class="empty-result">
+      <div class="empty-icon">🛡️</div>
+      <p>Awaiting URL analysis — results will appear here with risk score and detailed reasoning.</p>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <section id="how-it-works" class="features">
+    <div class="feature">
+      <div class="f-icon" style="background:#00E67622;color:#00E676">◉</div>
+      <h3>15+ Signals</h3>
+      <p>Domain age heuristics, typosquat detection, IP hosts, punycode, URL shorteners & more.</p>
+    </div>
+    <div class="feature">
+      <div class="f-icon" style="background:#FF3B3022;color:#FF3B30">⚡</div>
+      <h3>Instant</h3>
+      <p>All analysis runs locally in your browser. Zero API calls, zero data collection.</p>
+    </div>
+    <div class="feature">
+      <div class="f-icon" style="background:#2979FF22;color:#2979FF">⬢</div>
+      <h3>Explainable</h3>
+      <p>Every point of risk is explained — learn to spot phishing yourself.</p>
+    </div>
+  </section>
+
+  <!-- Extension Preview -->
+  <section id="extension-preview" class="extension-section">
+    <div class="ext-header">
+      <h2>Browser Extension Preview</h2>
+      <p>PhishShield ships as a Manifest V3 extension. This is how it looks as a popup — same engine, same score.</p>
+    </div>
+    <div class="ext-demo">
+      <div class="browser-mock">
+        <div class="browser-bar">
+          <div class="traffic"><span></span><span></span><span></span></div>
+          <div class="address-bar">🔒 https://paypal-secure-login.tk/verify <span class="ext-icon">◈</span></div>
+        </div>
+        <div class="browser-body">
+          <div class="ext-popup">
+            <div class="ext-popup-header">
+              <span class="ext-logo">◈ PhishShield</span>
+              <span class="ext-badge high">HIGH RISK</span>
+            </div>
+            <div class="ext-score-row">
+              <div class="ext-gauge">87</div>
+              <div class="ext-score-info">
+                <strong>87 / 100 — Blocked</strong>
+                <span>5 signals triggered</span>
+              </div>
+            </div>
+            <ul class="ext-list">
+              <li>✓ Suspicious TLD (.tk)</li>
+              <li>✓ Login keyword in path</li>
+              <li>✓ Typosquat (paypal)</li>
+              <li>✓ HTTP not HTTPS</li>
+            </ul>
+            <button class="ext-btn">View Full Report</button>
+            <div class="ext-footer">Protected by PhishShield • Local analysis</div>
+          </div>
+          <div class="browser-warning">
+            <strong>⚠️ Deceptive site ahead</strong>
+            <p>PhishShield flagged this page. Do not enter credentials.</p>
+          </div>
+        </div>
+      </div>
+      <div class="ext-code">
+        <div class="code-header">manifest.json <span>Manifest V3</span></div>
+<pre><code>{
+  "manifest_version": 3,
+  "name": "PhishShield",
+  "version": "2.1",
+  "description": "Real-time phishing URL analyzer",
+  "action": { "default_popup": "popup.html" },
+  "permissions": ["activeTab"],
+  "icons": { "128": "icon128.png" }
+}</code></pre>
+        <a class="download-btn" href="#" onclick="alert('Extension build: copy index.html logic into popup.html + add manifest.json from preview. All analysis is client-side — no build step needed.');return false;">⤓ How to install</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>PhishShield —Built for the visually impressive demo. All heuristics run client-side. Not a replacement for professional threat intel.</span>
+    <span class="mono">© 2026 PhishShield Labs</span>
+  </footer>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

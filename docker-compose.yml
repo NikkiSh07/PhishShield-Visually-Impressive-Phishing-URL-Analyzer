@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
+      - ./index.html:/app/index.html
+      - ./style.css:/app/style.css
+      - ./script.js:/app/script.js
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
